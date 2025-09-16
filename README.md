@@ -1,124 +1,329 @@
-# 🦜🕸️LangGraph.js
+# LangGraph Studio Data Enrichment Template
 
-[![Docs](https://img.shields.io/badge/docs-latest-blue)](https://langchain-ai.github.io/langgraphjs/)
-![Version](https://img.shields.io/npm/v/@langchain/langgraph?logo=npm)  
-[![Downloads](https://img.shields.io/npm/dm/@langchain/langgraph)](https://www.npmjs.com/package/@langchain/langgraph)
-[![Open Issues](https://img.shields.io/github/issues-raw/langchain-ai/langgraphjs)](https://github.com/langchain-ai/langgraphjs/issues)
+[![CI](https://github.com/langchain-ai/data-enrichment-js/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/langchain-ai/data-enrichment-js/actions/workflows/unit-tests.yml)
+[![Integration Tests](https://github.com/langchain-ai/data-enrichment-js/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/langchain-ai/data-enrichment-js/actions/workflows/integration-tests.yml)
+[![Open in - LangGraph Studio](https://img.shields.io/badge/Open_in-LangGraph_Studio-00324d.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4NS4zMzMiIGhlaWdodD0iODUuMzMzIiB2ZXJzaW9uPSIxLjAiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBhdGggZD0iTTEzIDcuOGMtNi4zIDMuMS03LjEgNi4zLTYuOCAyNS43LjQgMjQuNi4zIDI0LjUgMjUuOSAyNC41QzU3LjUgNTggNTggNTcuNSA1OCAzMi4zIDU4IDcuMyA1Ni43IDYgMzIgNmMtMTIuOCAwLTE2LjEuMy0xOSAxLjhtMzcuNiAxNi42YzIuOCAyLjggMy40IDQuMiAzLjQgNy42cy0uNiA0LjgtMy40IDcuNkw0Ny4yIDQzSDE2LjhsLTMuNC0zLjRjLTQuOC00LjgtNC44LTEwLjQgMC0xNS4ybDMuNC0zLjRoMzAuNHoiLz48cGF0aCBkPSJNMTguOSAyNS42Yy0xLjEgMS4zLTEgMS43LjQgMi41LjkuNiAxLjcgMS44IDEuNyAyLjcgMCAxIC43IDIuOCAxLjYgNC4xIDEuNCAxLjkgMS40IDIuNS4zIDMuMi0xIC42LS42LjkgMS40LjkgMS41IDAgMi43LS41IDIuNy0xIDAtLjYgMS4xLS44IDIuNi0uNGwyLjYuNy0xLjgtMi45Yy01LjktOS4zLTkuNC0xMi4zLTExLjUtOS44TTM5IDI2YzAgMS4xLS45IDIuNS0yIDMuMi0yLjQgMS41LTIuNiAzLjQtLjUgNC4yLjguMyAyIDEuNyAyLjUgMy4xLjYgMS41IDEuNCAyLjMgMiAyIDEuNS0uOSAxLjItMy41LS40LTMuNS0yLjEgMC0yLjgtMi44LS44LTMuMyAxLjYtLjQgMS42LS41IDAtLjYtMS4xLS4xLTEuNS0uNi0xLjItMS42LjctMS43IDMuMy0yLjEgMy41LS41LjEuNS4yIDEuNi4zIDIuMiAwIC43LjkgMS40IDEuOSAxLjYgMi4xLjQgMi4zLTIuMy4yLTMuMi0uOC0uMy0yLTEuNy0yLjUtMy4xLTEuMS0zLTMtMy4zLTMtLjUiLz48L3N2Zz4=)](https://langgraph-studio.vercel.app/templates/open?githubUrl=https://github.com/langchain-ai/data-enrichment-js)
 
-> [!NOTE]
-> Looking for the Python version? See the [Python repo](https://github.com/langchain-ai/langgraph) and the [Python docs](https://langchain-ai.github.io/langgraph/).
+Producing structured results (e.g., to populate a database or spreadsheet) from open-ended research (e.g., web research) is a common use case that LLM-powered agents are well-suited to handle. Here, we provide a general template for this kind of "data enrichment agent" agent using [LangGraph](https://github.com/langchain-ai/langgraph) in [LangGraph Studio](https://github.com/langchain-ai/langgraph-studio). It contains an example graph exported from `src/enrichment_agent/graph.ts` that implements a research assistant capable of automatically gathering information on various topics from the web and structuring the results into a user-defined JSON format.
 
-LangGraph — used by Replit, Uber, LinkedIn, GitLab and more — is a low-level orchestration framework for building controllable agents. While langchain provides integrations and composable components to streamline LLM application development, the LangGraph library enables agent orchestration — offering customizable architectures, long-term memory, and human-in-the-loop to reliably handle complex tasks.
+![Overview of agent](./static/overview.png)
+
+![](/static/studio.png)
+
+# What it does
+
+The enrichment agent defined in `src/enrichment_agent/graph.ts` performs the following steps:
+
+1. Takes a research **topic** and requested **extractionSchema** as input.
+2. Searches the web for relevant information
+3. Reads and extracts key details from websites
+4. Organizes the findings into the requested structured format
+5. Validates the gathered information for completeness and accuracy
+
+![Graph view in LangGraph studio UI](./static/studio.png)
+
+## Getting Started
+
+You will need the latest versions of `@langchain/langgraph` and `@langchain/core`. See these instructions for help upgrading an [existing project](https://langchain-ai.github.io/langgraphjs/how-tos/manage-ecosystem-dependencies/).
+
+Assuming you have already [installed LangGraph Studio](https://github.com/langchain-ai/langgraph-studio?tab=readme-ov-file#download), to set up:
+
+1. Create a `.env` file.
 
 ```bash
-npm install @langchain/langgraph @langchain/core
+cp .env.example .env
 ```
 
-To learn more about how to use LangGraph, check out [the docs](https://langchain-ai.github.io/langgraphjs/). We show a simple example below of how to create a ReAct agent.
+2. Define required API keys in your `.env` file.
 
-```ts
-// npm install @langchain-anthropic
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { ChatAnthropic } from "@langchain/anthropic";
-import { tool } from "@langchain/core/tools";
+The primary [search tool](./src/enrichment_agent/tools.ts) [^1] used is [Tavily](https://tavily.com/). Create an API key [here](https://app.tavily.com/sign-in).
 
-import { z } from "zod";
+<!--
+Setup instruction auto-generated by `langgraph template lock`. DO NOT EDIT MANUALLY.
+-->
 
-const search = tool(
-  async ({ query }) => {
-    if (
-      query.toLowerCase().includes("sf") ||
-      query.toLowerCase().includes("san francisco")
-    ) {
-      return "It's 60 degrees and foggy.";
+<details>
+<summary>Setup for `model`</summary>
+The `llm` configuration defaults are shown below:
+
+```yaml
+model: anthropic/claude-3-5-sonnet-20240620
+```
+
+Follow the instructions below to get set up, or pick one of the additional options.
+
+### Anthropic Chat Models
+
+To use Anthropic's chat models:
+
+1. Sign up for an [Anthropic API key](https://console.anthropic.com/) if you haven't already.
+2. Once you have your API key, add it to your `.env` file:
+
+```
+ANTHROPIC_API_KEY=your-api-key
+```
+
+### Fireworks Chat Models
+
+To use Fireworks AI's chat models:
+
+1. Sign up for a [Fireworks AI account](https://app.fireworks.ai/signup) and obtain an API key.
+2. Add your Fireworks AI API key to your `.env` file:
+
+```
+FIREWORKS_API_KEY=your-api-key
+```
+
+#### OpenAI Chat Models
+
+To use OpenAI's chat models:
+
+1. Sign up for an [OpenAI API key](https://platform.openai.com/signup).
+2. Once you have your API key, add it to your `.env` file:
+
+```
+OPENAI_API_KEY=your-api-key
+```
+
+</details>
+
+<!--
+End setup instructions
+-->
+
+3. Consider a research topic and desired extraction schema.
+
+As an example, here is a research topic we can consider:
+
+```
+"Autonomous agents"
+```
+
+With an `extractionSchema` of:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "facts": {
+      "type": "array",
+      "description": "An array of facts retrieved from the provided sources",
+      "items": {
+        "type": "string"
+      }
     }
-    return "It's 90 degrees and sunny.";
   },
-  {
-    name: "search",
-    description: "Call to surf the web.",
-    schema: z.object({
-      query: z.string().describe("The query to use in your search."),
-    }),
+  "required": ["facts"]
+}
+```
+
+Another example topic with a more complex schema is:
+
+```
+"Top 5 chip providers for LLM Training"
+```
+
+And here is a desired `extractionSchema`:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "companies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Company name"
+          },
+          "technologies": {
+            "type": "string",
+            "description": "Brief summary of key technologies used by the company"
+          },
+          "market_share": {
+            "type": "string",
+            "description": "Overview of market share for this company"
+          },
+          "future_outlook": {
+            "type": "string",
+            "description": "Brief summary of future prospects and developments in the field for this company"
+          },
+          "key_powers": {
+            "type": "string",
+            "description": "Which of the 7 Powers (Scale Economies, Network Economies, Counter Positioning, Switching Costs, Branding, Cornered Resource, Process Power) best describe this company's competitive advantage"
+          }
+        },
+        "required": ["name", "technologies", "market_share", "future_outlook"]
+      },
+      "description": "List of companies"
+    }
+  },
+  "required": ["companies"]
+}
+```
+
+4. Open the folder LangGraph Studio, and input `topic` and `extractionSchema`.
+
+## How to customize
+
+1. **Customize research targets**: Provide a custom JSON `extractionSchema` when calling the graph to gather different types of information.
+2. **Select a different model**: We default to anthropic (`claude-3-5-sonnet-20240620`). You can select a compatible chat model using `provider/model-name` via configuration. Example: `openai/gpt-4o-mini`.
+3. **Customize the prompt**: We provide a default prompt in [src/enrichment_agent/prompts.ts](./src/enrichment_agent/prompts.ts). You can easily update this via configuration.
+
+For quick prototyping, these configurations can be set in the studio UI.
+
+![Config In Studio](./static/config.png)
+
+You can also quickly extend this template by:
+
+- Adding new tools and API connections in [src/enrichment_agent/tools.ts](./src/enrichment_agent/tools.ts). These are just any TypeScript functions.
+- Adding additional steps in [src/enrichment_agent/graph.ts](./src/enrichment_agent/graph.ts).
+
+## Development
+
+While iterating on your graph, you can edit past state and rerun your app from past states to debug specific nodes. Local changes will be automatically applied via hot reload. Try adding an interrupt before the agent calls tools, updating the default system message in [src/enrichment_agent/utils.ts](./src/enrichment_agent/utils.ts) to take on a persona, or adding additional nodes and edges!
+
+Follow up requests will be appended to the same thread. You can create an entirely new thread, clearing previous history, using the `+` button in the top right.
+
+You can find the latest (under construction) docs on [LangGraph.js](https://langchain-ai.github.io/langgraphjs/) here, including examples and other references. Using those guides can help you pick the right patterns to adapt here for your use case.
+
+LangGraph Studio also integrates with [LangSmith](https://smith.langchain.com/) for more in-depth tracing and collaboration with teammates.
+
+[^1]: https://js.langchain.com/docs/concepts#tools
+
+<!--
+Configuration auto-generated by `langgraph template lock`. DO NOT EDIT MANUALLY.
+{
+  "config_schemas": {
+    "agent": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string",
+          "default": "anthropic/claude-3-5-sonnet-20240620",
+          "description": "The name of the language model to use for the agent. Should be in the form: provider/model-name.",
+          "environment": [
+            {
+              "value": "anthropic/claude-1.2",
+              "variables": "ANTHROPIC_API_KEY"
+            },
+            {
+              "value": "anthropic/claude-2.0",
+              "variables": "ANTHROPIC_API_KEY"
+            },
+            {
+              "value": "anthropic/claude-2.1",
+              "variables": "ANTHROPIC_API_KEY"
+            },
+            {
+              "value": "anthropic/claude-3-5-sonnet-20240620",
+              "variables": "ANTHROPIC_API_KEY"
+            },
+            {
+              "value": "anthropic/claude-3-haiku-20240307",
+              "variables": "ANTHROPIC_API_KEY"
+            },
+            {
+              "value": "anthropic/claude-3-opus-20240229",
+              "variables": "ANTHROPIC_API_KEY"
+            },
+            {
+              "value": "anthropic/claude-3-sonnet-20240229",
+              "variables": "ANTHROPIC_API_KEY"
+            },
+            {
+              "value": "anthropic/claude-instant-1.2",
+              "variables": "ANTHROPIC_API_KEY"
+            },
+            {
+              "value": "openai/gpt-3.5-turbo",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-3.5-turbo-0125",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-3.5-turbo-0301",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-3.5-turbo-0613",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-3.5-turbo-1106",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-3.5-turbo-16k",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-3.5-turbo-16k-0613",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-0125-preview",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-0314",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-0613",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-1106-preview",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-32k",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-32k-0314",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-32k-0613",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-turbo",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-turbo-preview",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4-vision-preview",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4o",
+              "variables": "OPENAI_API_KEY"
+            },
+            {
+              "value": "openai/gpt-4o-mini",
+              "variables": "OPENAI_API_KEY"
+            }
+          ]
+        }
+      },
+      "environment": [
+        "TAVILY_API_KEY"
+      ]
+    }
   }
-);
-
-const model = new ChatAnthropic({
-  model: "claude-3-7-sonnet-latest",
-});
-
-const agent = createReactAgent({
-  llm: model,
-  tools: [search],
-});
-
-const result = await agent.invoke({
-  messages: [
-    {
-      role: "user",
-      content: "what is the weather in sf",
-    },
-  ],
-});
-```
-
-## Full-stack Quickstart
-
-Get started quickly by building a full-stack LangGraph application using the [`create-agent-chat-app`](https://www.npmjs.com/package/create-agent-chat-app) CLI:
-
-```bash
-npx create-agent-chat-app@latest
-```
-
-The CLI sets up a chat interface and helps you configure your application, including:
-
-- 🧠 Choice of 4 prebuilt agents (ReAct, Memory, Research, Retrieval)
-- 🌐 Frontend framework (Next.js or Vite)
-- 📦 Package manager (`npm`, `yarn`, or `pnpm`)
-
-## Why use LangGraph?
-
-LangGraph is built for developers who want to build powerful, adaptable AI agents. Developers choose LangGraph for:
-
-- **Reliability and controllability.** Steer agent actions with moderation checks and human-in-the-loop approvals. LangGraph persists context for long-running workflows, keeping your agents on course.
-- **Low-level and extensible.** Build custom agents with fully descriptive, low-level primitives – free from rigid abstractions that limit customization. Design scalable multi-agent systems, with each agent serving a specific role tailored to your use case.
-- **First-class streaming support.** With token-by-token streaming and streaming of intermediate steps, LangGraph gives users clear visibility into agent reasoning and actions as they unfold in real time.
-
-LangGraph is trusted in production and powering agents for companies like:
-
-- [Klarna](https://blog.langchain.dev/customers-klarna/): Customer support bot for 85 million active users
-- [Elastic](https://www.elastic.co/blog/elastic-security-generative-ai-features): Security AI assistant for threat detection
-- [Uber](https://dpe.org/sessions/ty-smith-adam-huda/this-year-in-ubers-ai-driven-developer-productivity-revolution/): Automated unit test generation
-- [Replit](https://www.langchain.com/breakoutagents/replit): Code generation
-- And many more ([see list here](https://www.langchain.com/built-with-langgraph))
-
-## LangGraph’s ecosystem
-
-While LangGraph can be used standalone, it also integrates seamlessly with any LangChain product, giving developers a full suite of tools for building agents. To improve your LLM application development, pair LangGraph with:
-
-- [LangSmith](http://www.langchain.com/langsmith) — Helpful for agent evals and observability. Debug poor-performing LLM app runs, evaluate agent trajectories, gain visibility in production, and improve performance over time.
-- [LangGraph Platform](https://langchain-ai.github.io/langgraphjs/concepts/#langgraph-platform) — Deploy and scale agents effortlessly with a purpose-built deployment platform for long running, stateful workflows. Discover, reuse, configure, and share agents across teams — and iterate quickly with visual prototyping in [LangGraph Studio](https://langchain-ai.github.io/langgraphjs/concepts/langgraph_studio/).
-
-## Pairing with LangGraph Platform
-
-While LangGraph is our open-source agent orchestration framework, enterprises that need scalable agent deployment can benefit from [LangGraph Platform](https://langchain-ai.github.io/langgraphjs/concepts/langgraph_platform/).
-
-LangGraph Platform can help engineering teams:
-
-- **Accelerate agent development**: Quickly create agent UXs with configurable templates and [LangGraph Studio](https://langchain-ai.github.io/langgraphjs/concepts/langgraph_studio/) for visualizing and debugging agent interactions.
-- **Deploy seamlessly**: We handle the complexity of deploying your agent. LangGraph Platform includes robust APIs for memory, threads, and cron jobs plus auto-scaling task queues & servers.
-- **Centralize agent management & reusability**: Discover, reuse, and manage agents across the organization. Business users can also modify agents without coding.
-
-## Additional resources
-
-- [LangChain Forum](https://forum.langchain.com/): Connect with the community and share all of your technical questions, ideas, and feedback.
-- [LangChain Academy](https://academy.langchain.com/courses/intro-to-langgraph): Learn the basics of LangGraph in our free, structured course.
-- [Tutorials](https://langchain-ai.github.io/langgraphjs/tutorials/): Simple walkthroughs with guided examples on getting started with LangGraph.
-- [Templates](https://langchain-ai.github.io/langgraphjs/concepts/template_applications/): Pre-built reference apps for common agentic workflows (e.g. ReAct agent, memory, retrieval etc.) that can be cloned and adapted.
-- [How-to Guides](https://langchain-ai.github.io/langgraphjs/how-tos/): Quick, actionable code snippets for topics such as streaming, adding memory & persistence, and design patterns (e.g. branching, subgraphs, etc.).
-- [API Reference](https://langchain-ai.github.io/langgraphjs/reference/): Detailed reference on core classes, methods, how to use the graph and checkpointing APIs, and higher-level prebuilt components.
-- [Built with LangGraph](https://www.langchain.com/built-with-langgraph): Hear how industry leaders use LangGraph to ship powerful, production-ready AI applications.
-
-## Acknowledgements
-
-LangGraph is inspired by [Pregel](https://research.google/pubs/pub37252/) and [Apache Beam](https://beam.apache.org/). The public interface draws inspiration from [NetworkX](https://networkx.org/documentation/latest/). LangGraph is built by LangChain Inc, the creators of LangChain, but can be used without LangChain.
+}
+-->

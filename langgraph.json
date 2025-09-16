@@ -1,0 +1,10 @@
+{
+  "node_version": "20",
+  "dockerfile_lines": [],
+  "dependencies": ["."],
+  "graphs": {
+    "enrichment_agent": "./src/enrichment_agent/graph.ts:graph",
+    "rocket_agent": "./src/rocket_agent/graph.ts:graph"
+  },
+  "env": ".env"
+}

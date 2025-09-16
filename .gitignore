@@ -17,6 +17,8 @@ dist
 .env
 .ipynb_checkpoints
 
+# Node modules
+node_modules
 
 # LangGraph API
 .langgraph_api
