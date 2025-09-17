@@ -27,7 +27,7 @@ export async function validateInput(
   if (isNaN(handValue) || handValue < 1 || handValue > 3) {
     return {
       validationError:
-        "無効な入力ダー！1(グー)、2(パー)、3(チョキ)のいずれかを入力してほしいダー。",
+        "無効な入力です。1(グー)、2(パー)、3(チョキ)のいずれかを入力してください。",
       userChoice: null,
     }
   }
@@ -248,7 +248,7 @@ function generateGameSummary(
 🎮 ゲーム終了！🎮
 
 【最終結果】
-${winner}ダー！🏆
+${winner}！🏆
 
 【スコア】
 あなた: ${userWins}勝
@@ -264,10 +264,10 @@ AIが最も使った手: ${aiMostUsed}
 
 ${
   userWins > aiWins
-    ? "素晴らしい戦いぶりダー！またチャレンジしてほしいダー！"
+    ? "素晴らしい戦いぶりでした！The future is going to be wild - またチャレンジしてください！"
     : aiWins > userWins
-      ? "次は頑張ってほしいダー！リベンジ待ってるダー！"
-      : "接戦だったダー！次で決着をつけるダー！"
+      ? "次はもっと良い結果になるでしょう。This is fascinating - リベンジを楽しみにしています！"
+      : "接戦でした！データが示すように、次回は決着がつくでしょう！"
 }
 `
 }
