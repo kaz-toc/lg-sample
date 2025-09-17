@@ -1,15 +1,9 @@
 import { BaseChatModel } from "@langchain/core/language_models/chat_models"
-import {
-  MessageContent,
-  MessageContentComplex,
-} from "@langchain/core/messages"
+import { MessageContent, MessageContentComplex } from "@langchain/core/messages"
 import { initChatModel } from "langchain/chat_models/universal"
 
 /**
- * Helper function to extract text content from a complex message.
- *
- * @param content - The complex message content to process
- * @returns The extracted text content
+ * 複雑なメッセージコンテンツからテキストを抽出するヘルパー関数
  */
 function getSingleTextContent(content: MessageContentComplex) {
   if (content?.type === "text") {
@@ -21,10 +15,7 @@ function getSingleTextContent(content: MessageContentComplex) {
 }
 
 /**
- * Helper function to extract text content from various message types.
- *
- * @param content - The message content to process
- * @returns The extracted text content
+ * 様々なメッセージタイプからテキストコンテンツを抽出するヘルパー関数
  */
 export function getTextContent(content: MessageContent): string {
   if (typeof content === "string") {
@@ -36,9 +27,9 @@ export function getTextContent(content: MessageContent): string {
 }
 
 /**
- * Load a chat model from a fully specified name.
- * @param fullySpecifiedName - String in the format 'provider/model' or 'provider/account/provider/model'.
- * @returns A Promise that resolves to a BaseChatModel instance.
+ * 完全指定された名前からチャットモデルをロード
+ * @param fullySpecifiedName - 'provider/model' 形式の文字列
+ * @returns BaseChatModel インスタンスを返すPromise
  */
 export async function loadChatModel(
   fullySpecifiedName: string,

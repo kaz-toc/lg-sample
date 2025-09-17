@@ -1,9 +1,9 @@
-import { BaseChatModel } from "@langchain/core/language_models/chat_models";
+import { BaseChatModel } from "@langchain/core/language_models/chat_models"
 import {
   MessageContent,
   MessageContentComplex,
-} from "@langchain/core/messages";
-import { initChatModel } from "langchain/chat_models/universal";
+} from "@langchain/core/messages"
+import { initChatModel } from "langchain/chat_models/universal"
 
 /**
  * Helper function to extract text content from a complex message.
@@ -13,11 +13,11 @@ import { initChatModel } from "langchain/chat_models/universal";
  */
 function getSingleTextContent(content: MessageContentComplex) {
   if (content?.type === "text") {
-    return content.text;
+    return content.text
   } else if (content.type === "array") {
-    return content.content.map(getSingleTextContent).join(" ");
+    return content.content.map(getSingleTextContent).join(" ")
   }
-  return "";
+  return ""
 }
 
 /**
@@ -28,11 +28,11 @@ function getSingleTextContent(content: MessageContentComplex) {
  */
 export function getTextContent(content: MessageContent): string {
   if (typeof content === "string") {
-    return content;
+    return content
   } else if (Array.isArray(content)) {
-    return content.map(getSingleTextContent).join(" ");
+    return content.map(getSingleTextContent).join(" ")
   }
-  return "";
+  return ""
 }
 
 /**
@@ -43,13 +43,13 @@ export function getTextContent(content: MessageContent): string {
 export async function loadChatModel(
   fullySpecifiedName: string,
 ): Promise<BaseChatModel> {
-  const index = fullySpecifiedName.indexOf("/");
+  const index = fullySpecifiedName.indexOf("/")
   if (index === -1) {
     // If there's no "/", assume it's just the model
-    return await initChatModel(fullySpecifiedName);
+    return await initChatModel(fullySpecifiedName)
   } else {
-    const provider = fullySpecifiedName.slice(0, index);
-    const model = fullySpecifiedName.slice(index + 1);
-    return await initChatModel(model, { modelProvider: provider });
+    const provider = fullySpecifiedName.slice(0, index)
+    const model = fullySpecifiedName.slice(index + 1)
+    return await initChatModel(model, { modelProvider: provider })
   }
 }

@@ -4,7 +4,8 @@
   "dependencies": ["."],
   "graphs": {
     "enrichment_agent": "./src/enrichment_agent/graph.ts:graph",
-    "rocket_agent": "./src/rocket_agent/graph.ts:graph"
+    "rock_agent": "./src/rock_agent/graph.ts:graph",
+    "workcation_planner": "./src/workcation_planner/graph.ts:graph"
   },
   "env": ".env"
 }

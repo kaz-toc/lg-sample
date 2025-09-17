@@ -1,129 +1,81 @@
-/**
- * Tools for data enrichment.
- *
- * This module contains functions that are directly exposed to the LLM as tools.
- * These tools can be used for tasks such as web searching and scraping.
- * Users can edit and extend these tools as needed.
- */
-import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
-import { RunnableConfig } from "@langchain/core/runnables";
-import { tool } from "@langchain/core/tools";
-
-import { INFO_PROMPT } from "./prompts.js";
-import { ensureConfiguration } from "./configuration.js";
-import { StateAnnotation } from "./state.js";
-import { getTextContent, loadChatModel } from "./utils.js";
-import {
-  AIMessage,
-  isBaseMessage,
-  ToolMessage,
-} from "@langchain/core/messages";
-import { z } from "zod";
+import { tool } from "@langchain/core/tools"
+import { Hands, HandValue, Result } from "./constants.js"
+import { z } from "zod"
 
 /**
- * Initialize tools within a function so that they have access to the current
- * state and config at runtime.
+ * Check if the given value is a valid hand in Rock, Paper, Scissors
+ * @param hand - The hand value to validate
+ * @returns True if the hand value is valid, false otherwise
  */
-function initializeTools(
-  state?: typeof StateAnnotation.State,
-  config?: RunnableConfig
-) {
-  /**
-   * Search for general results.
-   *
-   * This function performs a search using the Tavily search engine, which is designed
-   * to provide comprehensive, accurate, and trusted results. It's particularly useful
-   * for answering questions about current events.
-   */
-  const configuration = ensureConfiguration(config);
-  const searchTool = new TavilySearchResults({
-    maxResults: configuration.maxSearchResults,
-  });
-
-  async function scrapeWebsite(input: { url: string }): Promise<string> {
-    /**
-     * Scrape and summarize content from a given URL.
-     */
-    const { url } = input;
-    const response = await fetch(url);
-    const content = await response.text();
-    const truncatedContent = content.slice(0, 50000);
-    const p = INFO_PROMPT.replace(
-      "{info}",
-      JSON.stringify(state?.extractionSchema, null, 2)
-    )
-      .replace("{url}", url)
-      .replace("{content}", truncatedContent);
-
-    const rawModel = await loadChatModel(configuration.model);
-    const result = await rawModel.invoke(p);
-    return getTextContent(result.content);
-  }
-
-  const scraperTool = tool(scrapeWebsite, {
-    name: "scrapeWebsite",
-    description: "Scrape content from a given website URL",
-    schema: z.object({
-      url: z.string().url().describe("The URL of the website to scrape"),
-    }),
-  });
-
-  return [searchTool, scraperTool];
+const isValidHand = (hand: number): boolean => {
+  return Object.values(Hands).includes(hand as HandValue)
 }
 
-export const toolNode = async (
-  state: typeof StateAnnotation.State,
-  config: RunnableConfig
-) => {
-  const message = state.messages[state.messages.length - 1];
-  // Initialize the tools within the context of the node so that the tools
-  // have the current state of the graph and the config in scope.
-  // See: https://js.langchain.com/docs/how_to/tool_runtime
-  const tools = initializeTools(state, config);
-  const outputs = await Promise.all(
-    (message as AIMessage).tool_calls?.map(async (call) => {
-      const tool = tools.find((tool) => tool.name === call.name);
-      try {
-        if (tool === undefined) {
-          throw new Error(`Tool "${call.name}" not found.`);
-        }
-        const newCall = {
-          ...call,
-          args: {
-            __state: state,
-            ...call.args,
-          },
-        };
-        const output = await tool.invoke(
-          { ...newCall, type: "tool_call" },
-          config
-        );
-        if (isBaseMessage(output) && output._getType() === "tool") {
-          return output;
-        } else {
-          return new ToolMessage({
-            name: tool.name,
-            content:
-              typeof output === "string" ? output : JSON.stringify(output),
-            tool_call_id: call.id ?? "",
-          });
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        return new ToolMessage({
-          content: `Error: ${e.message}\n Please fix your mistakes.`,
-          name: call.name,
-          tool_call_id: call.id ?? "",
-          status: "error",
-        });
-      }
-    }) ?? []
-  );
+/**
+ * Generate a random hand value for the game of Rock, Paper, Scissors
+ * @returns A random hand value
+ */
+const randomHand = async (): Promise<HandValue> => {
+  const handValues = Object.values(Hands)
+  return handValues[Math.floor(Math.random() * handValues.length)]
+}
 
-  return { messages: outputs };
-};
+/**
+ * Judge the result of the game of Rock, Paper, Scissors
+ * @param input - The input object containing the AI hand and user hand
+ * @returns The result of the game
+ */
+const judgeHand = async (input: {
+  aiHand: number
+  userHand: number
+}): Promise<string> => {
+  const { aiHand, userHand } = input
+  if (aiHand === userHand) return Result.draw
 
-// No state or config required here since these are just bound to the chat model
-// and are only used to define schema.
-// The tool node above will actually call the functions.
-export const MODEL_TOOLS = initializeTools();
+  // じゃんけんのルール:
+  // グー(1) vs チョキ(3) = グーの勝ち
+  // チョキ(3) vs パー(2) = チョキの勝ち
+  // パー(2) vs グー(1) = パーの勝ち
+
+  // AI視点での勝敗判定
+  if (aiHand === Hands.rock && userHand === Hands.scissors) return Result.win
+  if (aiHand === Hands.scissors && userHand === Hands.paper) return Result.win
+  if (aiHand === Hands.paper && userHand === Hands.rock) return Result.win
+
+  // それ以外はAIの負け
+  return Result.lose
+}
+
+export const validateHandTool = tool(
+  (async (input: { hand: number }) => {
+    return isValidHand(input.hand)
+  }) as any,
+  {
+    name: "validateHand",
+    description: "Check if the hand value is valid for Rock, Paper, Scissors",
+    schema: z.object({
+      hand: z.number().describe("The hand value to validate"),
+    }),
+  },
+)
+
+export const generateHandTool = tool(randomHand as any, {
+  name: "generateHand",
+  description:
+    "Generate a random hand value for the game of Rock, Paper, Scissors",
+  schema: z.void(),
+})
+
+export const judgeHandTool = tool(
+  (async (input: { aiHand: number; userHand: number }) => {
+    return await judgeHand(input)
+  }) as any,
+  {
+    name: "judgeHand",
+    description: "Judge the result of the game of Rock, Paper, Scissors",
+    schema: z.object({
+      aiHand: z.number().describe("The hand value of the AI"),
+      userHand: z.number().describe("The hand value of the user"),
+    }),
+  },
+)

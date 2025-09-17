@@ -58,5 +58,7 @@ module.exports = {
     "consistent-return": 0,
     "no-else-return": 0,
     "new-cap": ["error", { properties: false, capIsNew: false }],
+    semi: ["error", "never"],
+    "@typescript-eslint/semi": ["error", "never"],
   },
-};
+}

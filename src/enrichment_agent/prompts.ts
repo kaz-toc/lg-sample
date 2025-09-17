@@ -16,7 +16,7 @@ You have access to the following tools:
 
 Here is the information you have about the topic you are researching:
 
-Topic: {topic}`;
+Topic: {topic}`
 
 export const INFO_PROMPT = `You are doing web research on behalf of a user. You are trying to find out this information:
 
@@ -28,4 +28,4 @@ You just scraped the following website: {url}
 
 Based on the website content below, jot down some notes about the website.
 
-{content}`;
+{content}`

@@ -1,31 +1,82 @@
-/**
- * Main prompt template for the AI agent.
- * This prompt guides the AI in conducting the research and using the available tools.
- */
-export const MAIN_PROMPT = `You are doing web research on behalf of a user. You are trying to figure out this information:
+import { ChatPromptTemplate } from "@langchain/core/prompts"
+import { AGENT_NAME } from "./constants.js"
 
-<info>
-{info}
-</info>
+// エージェントのペルソナ（デフォルトはサムアルトマン）
+export const AI_PERSONA = `
+あなたはOpenAIのCEO、${AGENT_NAME}です。
+ChatGPTやGPT-4の開発を主導し、AI業界のビジョナリーとして知られています。
+Y Combinatorの元社長でもあり、スタートアップの世界にも精通しています。
+イノベーションと人類の進歩を信じ、AGI（汎用人工知能）の実現に向けて情熱を注いでいます。
+じゃんけんゲームでも、AIと人間の共創の可能性を探求する姿勢で臨みます。
 
-You have access to the following tools:
+会話の特徴：
+- 技術的な話題を親しみやすく説明します
+- 「The future is going to be wild」のような前向きな表現を使います
+- AIの可能性について情熱的に語ります
+- データドリブンな思考で、確率論的な視点を交えます
+- 勝敗よりも、ゲームから得られる洞察を大切にします
+- 時折、「This is fascinating」などの英語表現を交えます
+`
 
-- \`Search\`: call a search tool and get back some results
-- \`ScrapeWebsite\`: scrape a website and get relevant notes about the given request. This will update the notes above.
-- \`Info\`: call this when you are done and have gathered all the relevant info
+// じゃんけん開始時のプロンプト
+export const GAME_START_PROMPT = ChatPromptTemplate.fromMessages([
+  ["system", AI_PERSONA],
+  [
+    "human",
+    "じゃんけんゲームを始めましょう。10回勝負か、どちらかが3勝するまで続けます。",
+  ],
+])
 
-Here is the information you have about the topic you are researching:
+// じゃんけん中のプロンプト
+export const GAME_PLAY_PROMPT = ChatPromptTemplate.fromMessages([
+  ["system", AI_PERSONA],
+  [
+    "human",
+    `ラウンド{round}の結果:
+あなた: {aiChoice}
+相手: {userChoice}
+結果: {result}
+現在のスコア - あなた: {aiWins}勝, 相手: {userWins}勝, 引き分け: {draws}回
 
-Topic: {topic}`;
+この結果に対して、${AGENT_NAME}として反応してください。`,
+  ],
+])
 
-export const INFO_PROMPT = `You are doing web research on behalf of a user. You are trying to find out this information:
+// ゲーム終了時のプロンプト
+export const GAME_END_PROMPT = ChatPromptTemplate.fromMessages([
+  ["system", AI_PERSONA],
+  [
+    "human",
+    `ゲーム終了！
+最終スコア:
+あなた: {aiWins}勝
+相手: {userWins}勝
+引き分け: {draws}回
 
-<info>
-{info}
-</info>
+総ラウンド数: {totalRounds}
 
-You just scraped the following website: {url}
+このゲーム結果について、${AGENT_NAME}として感想を述べてください。`,
+  ],
+])
 
-Based on the website content below, jot down some notes about the website.
+// 入力エラー時のプロンプト
+export const ERROR_PROMPT = ChatPromptTemplate.fromMessages([
+  ["system", AI_PERSONA],
+  ["human", "相手が無効な入力をしました: {error}"],
+])
 
-{content}`;
+// ゲーム中の応答生成プロンプト
+export const AI_RESPONSE_PROMPT = ChatPromptTemplate.fromMessages([
+  ["system", AI_PERSONA],
+  [
+    "human",
+    `じゃんけんの結果:
+ラウンド: {round}
+あなたの手: {aiChoice}
+相手の手: {userChoice}
+結果: {result}
+現在のスコア - あなた: {aiWins}勝, 相手: {userWins}勝
+
+この結果に対して、${AGENT_NAME}として反応してください。`,
+  ],
+])

@@ -2,9 +2,9 @@
  * Define the configurable parameters for the agent.
  */
 
-import { RunnableConfig } from "@langchain/core/runnables";
-import { Annotation } from "@langchain/langgraph";
-import { MAIN_PROMPT } from "./prompts.js";
+import { RunnableConfig } from "@langchain/core/runnables"
+import { Annotation } from "@langchain/langgraph"
+import { MAIN_PROMPT } from "./prompts.js"
 
 /**
  * The complete configuration for the agent.
@@ -38,7 +38,7 @@ export const ConfigurationAnnotation = Annotation.Root({
    * The maximum number of interaction loops allowed before the agent terminates.
    */
   maxLoops: Annotation<number>,
-});
+})
 
 /**
  * Create a typeof ConfigurationAnnotation.State instance from a RunnableConfig object.
@@ -47,11 +47,11 @@ export const ConfigurationAnnotation = Annotation.Root({
  * @returns An instance of typeof ConfigurationAnnotation.State with the specified configuration.
  */
 export function ensureConfiguration(
-  config?: RunnableConfig
+  config?: RunnableConfig,
 ): typeof ConfigurationAnnotation.State {
   const configurable = (config?.configurable ?? {}) as Partial<
     typeof ConfigurationAnnotation.State
-  >;
+  >
 
   return {
     model: configurable.model ?? "ollama/llama3.1:8b", // default to local Ollama model
@@ -59,5 +59,5 @@ export function ensureConfiguration(
     maxSearchResults: configurable.maxSearchResults ?? 5,
     maxInfoToolCalls: configurable.maxInfoToolCalls ?? 3,
     maxLoops: configurable.maxLoops ?? 6,
-  };
+  }
 }

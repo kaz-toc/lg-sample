@@ -1,5 +1,5 @@
-import { Annotation, messagesStateReducer } from "@langchain/langgraph";
-import { type BaseMessage } from "@langchain/core/messages";
+import { Annotation, messagesStateReducer } from "@langchain/langgraph"
+import { type BaseMessage } from "@langchain/core/messages"
 
 // eslint-disable-next-line
 export type AnyRecord = Record<string, any>;
@@ -17,7 +17,7 @@ export const InputStateAnnotation = Annotation.Root({
   extractionSchema: Annotation<AnyRecord>,
   // Feel free to add additional attributes to your state as needed.
   // Common examples include retrieved documents, extracted entities, API connections, etc.
-});
+})
 /**
  * A graph's StateAnnotation defines three main thing:
  * 1. The structure of the data to be passed between nodes (which "channels" to read from/write to and their types)
@@ -82,4 +82,4 @@ export const StateAnnotation = Annotation.Root({
   }),
   // Feel free to add additional attributes to your state as needed.
   // Common examples include retrieved documents, extracted entities, API connections, etc.
-});
+})

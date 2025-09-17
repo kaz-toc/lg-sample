@@ -1,63 +1,58 @@
-/**
- * Define the configurable parameters for the agent.
- */
-
-import { RunnableConfig } from "@langchain/core/runnables";
-import { Annotation } from "@langchain/langgraph";
-import { MAIN_PROMPT } from "./prompts.js";
+import { Annotation } from "@langchain/langgraph"
 
 /**
- * The complete configuration for the agent.
+ * Rock Agent Configuration State
+ * This configuration manages settings for the Rock Paper Scissors game agent
  */
-export const ConfigurationAnnotation = Annotation.Root({
+export const RockAgentConfiguration = Annotation.Root({
   /**
-   * The name of the language model to use for the agent.
-   *
-   * Should be in the form: provider/model-name.
+   * LLM model configuration
    */
-  model: Annotation<string>,
-
-  /**
-   * The main prompt template to use for the agent's interactions.
-   *
-   * Expects two template literals: ${info} and ${topic}.
-   */
-  prompt: Annotation<string>,
+  llm: Annotation<string>({
+    reducer: (x, y) => y ?? x,
+    default: () => process.env.ROCK_AGENT_MODEL || "gpt-3.5-turbo",
+  }),
 
   /**
-   * The maximum number of search results to return for each search query.
+   * Temperature for LLM responses
+   * Higher values make responses more creative/random
    */
-  maxSearchResults: Annotation<number>,
+  llmTemperature: Annotation<number>({
+    reducer: (x, y) => y ?? x,
+    default: () => 0.7,
+  }),
 
   /**
-   * The maximum number of times the Info tool can be called during a single interaction.
+   * Maximum number of retries for tool calls
    */
-  maxInfoToolCalls: Annotation<number>,
+  maxRetries: Annotation<number>({
+    reducer: (x, y) => y ?? x,
+    default: () => 3,
+  }),
 
   /**
-   * The maximum number of interaction loops allowed before the agent terminates.
+   * Whether to show detailed game statistics
    */
-  maxLoops: Annotation<number>,
-});
+  showDetailedStats: Annotation<boolean>({
+    reducer: (x, y) => y ?? x,
+    default: () => true,
+  }),
 
-/**
- * Create a typeof ConfigurationAnnotation.State instance from a RunnableConfig object.
- *
- * @param config - The configuration object to use.
- * @returns An instance of typeof ConfigurationAnnotation.State with the specified configuration.
- */
-export function ensureConfiguration(
-  config?: RunnableConfig
-): typeof ConfigurationAnnotation.State {
-  const configurable = (config?.configurable ?? {}) as Partial<
-    typeof ConfigurationAnnotation.State
-  >;
+  /**
+   * Language for game messages
+   */
+  language: Annotation<string>({
+    reducer: (x, y) => y ?? x,
+    default: () => "ja",
+  }),
 
-  return {
-    model: configurable.model ?? "ollama/llama3.1:8b", // default to local Ollama model
-    prompt: configurable.prompt ?? MAIN_PROMPT,
-    maxSearchResults: configurable.maxSearchResults ?? 5,
-    maxInfoToolCalls: configurable.maxInfoToolCalls ?? 3,
-    maxLoops: configurable.maxLoops ?? 6,
-  };
-}
+  /**
+   * Whether to enable Baba's special giant power mode (easter egg)
+   */
+  giantMode: Annotation<boolean>({
+    reducer: (x, y) => y ?? x,
+    default: () => false,
+  }),
+})
+
+export type RockAgentConfigurationType = typeof RockAgentConfiguration.State
