@@ -46,7 +46,7 @@ function createRockAgentGraph(model: BaseChatModel) {
 let defaultModel: BaseChatModel
 try {
   // モデル名を環境変数から取得、なければデフォルトを使用
-  const modelName = process.env.ROCK_AGENT_MODEL || "gpt-3.5-turbo"
+  const modelName = process.env.ROCK_AGENT_MODEL || "ollama/llama3.1:8b"
   console.log("[RockAgent] Loading model:", modelName)
   defaultModel = await loadChatModel(modelName)
   console.log("[RockAgent] Model loaded successfully")
@@ -54,8 +54,8 @@ try {
   console.error("[RockAgent] Failed to load default model:", error)
   // フォールバックとしてOpenAIのモデルを使用
   try {
-    console.log("[RockAgent] Trying fallback model: gpt-3.5-turbo")
-    defaultModel = await loadChatModel("gpt-3.5-turbo")
+    console.log("[RockAgent] Trying fallback model: ollama/llama3.1:8b")
+    defaultModel = await loadChatModel("ollama/llama3.1:8b")
     console.log("[RockAgent] Fallback model loaded successfully")
   } catch (fallbackError) {
     console.error("[RockAgent] Failed to load fallback model:", fallbackError)

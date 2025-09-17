@@ -10,7 +10,7 @@ export const RockAgentConfiguration = Annotation.Root({
    */
   llm: Annotation<string>({
     reducer: (x, y) => y ?? x,
-    default: () => process.env.ROCK_AGENT_MODEL || "gpt-3.5-turbo",
+    default: () => process.env.ROCK_AGENT_MODEL || "ollama/llama3.1:8b",
   }),
 
   /**
